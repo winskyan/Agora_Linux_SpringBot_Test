@@ -14,7 +14,7 @@ mvn archetype:generate -DgroupId=com.example -DartifactId=demo -DarchetypeArtifa
 
 ## 前置要求
 
-- Java JDK（8 版本或更高）
+- Java JDK（21 版本或更高）
 - Maven
 - Linux 环境
 
@@ -29,7 +29,7 @@ mvn archetype:generate -DgroupId=com.example -DartifactId=demo -DarchetypeArtifa
 2. 将本地 JAR 安装到 Maven 本地仓库：
 
    ```
-   mvn install:install-file -Dfile=lib/agora-sdk.jar -DgroupId=io.agora.rtc -DartifactId=linux-sdk -Dversion=4.4.0 -Dpackaging=jar
+   mvn install:install-file -Dfile=lib/agora-sdk.jar -DgroupId=io.agora.rtc -DartifactId=linux-sdk -Dversion=4.0.1.2 -Dpackaging=jar
    ```
 
 3. 构建项目：
@@ -57,10 +57,17 @@ LD_LIBRARY_PATH="$LD_LIBRARY_PATH:lib/native/linux/x86_64" java -Dserver.port=18
 要启动一个房间，使用以下 API 端点：
 
 ```
-http://10.200.0.206/api/start/roomId=dddd
+http://10.200.0.206:18080/api/start?roomId=dddd
 ```
 
 将 `dddd` 替换为您想要的房间 ID。
+
+## 停止运行
+
+```
+ sudo lsof -i :18080
+ sudo kill -9 <PID>
+```
 
 ## 注意事项
 

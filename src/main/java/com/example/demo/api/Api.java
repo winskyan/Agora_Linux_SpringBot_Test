@@ -1,5 +1,6 @@
 package com.example.demo.api;
 
+import java.nio.ByteBuffer;
 import java.util.concurrent.CountDownLatch;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,17 +14,21 @@ import com.example.demo.service.Container;
 import com.example.demo.service.SampleAudioFrameObserver;
 import com.example.demo.service.SampleLocalUserObserver;
 import com.example.demo.service.SampleLogger;
+import com.example.demo.service.SampleVideoEncodedFrameObserver;
 import com.example.demo.service.Token;
 
 import io.agora.rtc.AgoraLocalUser;
 import io.agora.rtc.AgoraRtcConn;
 import io.agora.rtc.AgoraService;
 import io.agora.rtc.AgoraServiceConfig;
+import io.agora.rtc.AgoraVideoEncodedFrameObserver;
 import io.agora.rtc.AudioFrame;
 import io.agora.rtc.AudioSubscriptionOptions;
 import io.agora.rtc.Constants;
+import io.agora.rtc.EncodedVideoFrameInfo;
 import io.agora.rtc.RtcConnConfig;
 import io.agora.rtc.SDK;
+import io.agora.rtc.VideoSubscriptionOptions;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 
@@ -58,7 +63,7 @@ public class Api {
         config.setEnableAudioDevice(0);
         config.setEnableVideo(1);
         config.setAppId("aab8b8f5a8cd4469a63042fcfafe7063");
-        config.setLogFilePath("agora_logs/agorasdk.log");
+        // config.setLogFilePath("agora_logs/agorasdk.log");
         int ret = service.initialize(config);
         SampleLogger.log("initialize ret=" + ret);
 
@@ -105,6 +110,25 @@ public class Api {
             }
         });
         SampleLogger.log("setAudioFrameObserver  ret=" + ret);
+
+        VideoSubscriptionOptions subscriptionOptions = new VideoSubscriptionOptions();
+        subscriptionOptions.setEncodedFrameOnly(1);
+        subscriptionOptions.setType(Constants.VIDEO_STREAM_HIGH);
+
+        conn.getLocalUser().subscribeAllVideo(subscriptionOptions);
+
+        conn.getLocalUser()
+                .registerVideoEncodedFrameObserver(
+                        new AgoraVideoEncodedFrameObserver(new SampleVideoEncodedFrameObserver("") {
+                            @Override
+                            public int onEncodedVideoFrame(
+                                    AgoraVideoEncodedFrameObserver observer, int uid,
+                                    ByteBuffer buffer, EncodedVideoFrameInfo info) {
+                                SampleLogger.log(
+                                        "onEncodedVideoFrame uid:" + uid + " with channelId");
+                                return 1;
+                            }
+                        }));
 
         try {
             userLeftLatch.await();

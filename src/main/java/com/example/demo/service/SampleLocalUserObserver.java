@@ -1,15 +1,15 @@
 package com.example.demo.service;
 
-import io.agora.rtc.AgoraVideoEncodedFrameObserver;
 import io.agora.rtc.AgoraLocalUser;
 import io.agora.rtc.AgoraRemoteAudioTrack;
 import io.agora.rtc.AgoraRemoteVideoTrack;
-import io.agora.rtc.IVideoEncodedFrameObserver;
-import io.agora.rtc.IAudioFrameObserver;
-import io.agora.rtc.VideoTrackInfo;
-import io.agora.rtc.DefaultLocalUserObserver;
+import io.agora.rtc.AgoraVideoEncodedFrameObserver;
 import io.agora.rtc.AgoraVideoFrameObserver2;
+import io.agora.rtc.DefaultLocalUserObserver;
+import io.agora.rtc.IAudioFrameObserver;
+import io.agora.rtc.IVideoEncodedFrameObserver;
 import io.agora.rtc.IVideoFrameObserver2;
+import io.agora.rtc.VideoTrackInfo;
 
 public class SampleLocalUserObserver extends DefaultLocalUserObserver {
     private AgoraLocalUser localUser;
@@ -84,6 +84,13 @@ public class SampleLocalUserObserver extends DefaultLocalUserObserver {
         SampleLogger.log("onAudioSubscribeStateChanged success: channel = " + channel + ", user_id = " + user_id
                 + ", old_state = " + old_state + ", new_state = " + new_state + ", elapse_since_last_state = "
                 + elapse_since_last_state);
+    }
+
+    @Override
+    public void onUserVideoTrackStateChanged(AgoraLocalUser agora_local_user, String user_id,
+            AgoraRemoteVideoTrack agora_remote_video_track, int state, int reason, int elapsed) {
+        SampleLogger.log("onUserVideoTrackStateChanged success " + user_id + "   " + state + "   " + reason + "   "
+                + elapsed);
     }
 
     public synchronized void onUserVideoTrackSubscribed(AgoraLocalUser agora_local_user, String user_id,
