@@ -2,6 +2,8 @@ package com.example.demo.api;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,10 +26,8 @@ import io.agora.rtc.AgoraServiceConfig;
 import io.agora.rtc.AgoraVideoEncodedFrameObserver;
 import io.agora.rtc.AudioFrame;
 import io.agora.rtc.AudioSubscriptionOptions;
-import io.agora.rtc.Constants;
 import io.agora.rtc.EncodedVideoFrameInfo;
 import io.agora.rtc.RtcConnConfig;
-import io.agora.rtc.SDK;
 import io.agora.rtc.VideoSubscriptionOptions;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -47,28 +47,36 @@ public class Api {
 
     private CountDownLatch userLeftLatch = new CountDownLatch(1);
 
+    private int MAX_USER = 30;
+
+    private final ExecutorService testTaskExecutorService = Executors
+            .newCachedThreadPool();
+    private final ExecutorService logExecutorService = Executors
+            .newCachedThreadPool();
+
     @GetMapping("start")
     public String start(@RequestParam String roomId) {
-        if (container.conns.containsKey(roomId)) {
-            return "alreay running";
-        }
         SampleLogger.log("start roomId=" + roomId);
 
-        SDK.load();
-
-        String token = "";// tokenSevice.buildToken(roomId, 0L);
+        String[] appIdAndToken = Utils.readAppIdAndToken(".keys");
+        String appId = "";
+        String token = "";
+        if (null != appIdAndToken) {
+            appId = appIdAndToken[0];
+            token = appIdAndToken[1];// tokenSevice.buildToken(roomId, 0L);
+        }
+        SampleLogger.log("appId:" + appId + ",token:" + token);
         AgoraService service = new AgoraService();
         AgoraServiceConfig config = new AgoraServiceConfig();
         config.setEnableAudioProcessor(1);
         config.setEnableAudioDevice(0);
         config.setEnableVideo(1);
-        config.setAppId("aab8b8f5a8cd4469a63042fcfafe7063");
+        config.setAppId(appId);
         // config.setLogFilePath("agora_logs/agorasdk.log");
         int ret = service.initialize(config);
         SampleLogger.log("initialize ret=" + ret);
 
         int numOfChannels = 1;
-        // int sampleRate = 8000;
         int sampleRate = 16000;
         AudioSubscriptionOptions audioSubOpt = new AudioSubscriptionOptions();
         audioSubOpt.setBytesPerSample(2 * numOfChannels);
@@ -81,54 +89,86 @@ public class Api {
         ccfg.setAutoSubscribeAudio(1);
         ccfg.setAutoSubscribeVideo(0);
         ccfg.setChannelProfile(Constants.CHANNEL_PROFILE_LIVE_BROADCASTING);
-        AgoraRtcConn conn = service.agoraRtcConnCreate(ccfg);
-        // container.conns.put(roomId, conn);
 
-        SampleLogger.log("connect conn=" + conn);
+        testTaskExecutorService.execute(() -> {
+            while (true) {
+                try {
+                    // 使用 Class.forName 方法加载类
+                    Class<?> clazz = Class.forName("java.util.ArrayList");
+                    SampleLogger.log("Class found: " + clazz.getName());
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
 
-        ret = conn.registerObserver(new ConnObserver());
-        SampleLogger.log("registerObserver ret=" + ret);
-
-        ret = conn.connect("aab8b8f5a8cd4469a63042fcfafe7063", "test_channel", "11311");
-        SampleLogger.log("connect ret=" + ret);
-
-        conn.getLocalUser().subscribeAllAudio();
-        // Register local user observer
-        SampleLocalUserObserver localUserObserver = new SampleLocalUserObserver(conn.getLocalUser());
-
-        conn.getLocalUser().registerObserver(localUserObserver);
-
-        // Register audio frame observer to receive audio stream
-        ret = conn.getLocalUser().setPlaybackAudioFrameBeforeMixingParameters(numOfChannels, sampleRate);
-        SampleLogger.log("setPlaybackAudioFrameBeforeMixingParameters  ret=" + ret);
-        localUserObserver.setAudioFrameObserver(new SampleAudioFrameObserver() {
-            @Override
-            public int onPlaybackAudioFrameBeforeMixing(AgoraLocalUser agora_local_user, String channel_id, String uid,
-                    AudioFrame frame) {
-                SampleLogger.log("onPlaybackAudioFrameBeforeMixing");
-                return 1;
+                try {
+                    Thread.sleep(2 * 1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
-        SampleLogger.log("setAudioFrameObserver  ret=" + ret);
 
-        VideoSubscriptionOptions subscriptionOptions = new VideoSubscriptionOptions();
-        subscriptionOptions.setEncodedFrameOnly(1);
-        subscriptionOptions.setType(Constants.VIDEO_STREAM_HIGH);
+        for (int i = 0; i < MAX_USER; i++) {
+            final int index = i;
+            final String conToken = token;
+            testTaskExecutorService.execute(() -> {
 
-        conn.getLocalUser().subscribeAllVideo(subscriptionOptions);
+                AgoraRtcConn conn = service.agoraRtcConnCreate(ccfg);
+                // container.conns.put(roomId, conn);
 
-        conn.getLocalUser()
-                .registerVideoEncodedFrameObserver(
-                        new AgoraVideoEncodedFrameObserver(new SampleVideoEncodedFrameObserver("") {
-                            @Override
-                            public int onEncodedVideoFrame(
-                                    AgoraVideoEncodedFrameObserver observer, int uid,
-                                    ByteBuffer buffer, EncodedVideoFrameInfo info) {
-                                SampleLogger.log(
-                                        "onEncodedVideoFrame uid:" + uid + " with channelId");
-                                return 1;
-                            }
-                        }));
+                SampleLogger.log("connect conn=" + conn);
+
+                int retR = conn.registerObserver(new ConnObserver());
+                SampleLogger.log("registerObserver ret=" + retR);
+
+                retR = conn.connect(conToken, roomId, "113" + index);
+                SampleLogger.log("connect ret=" + ret);
+
+                conn.getLocalUser().subscribeAllAudio();
+                // Register local user observer
+                SampleLocalUserObserver localUserObserver = new SampleLocalUserObserver(conn.getLocalUser());
+
+                conn.getLocalUser().registerObserver(localUserObserver);
+
+                // Register audio frame observer to receive audio stream
+                retR = conn.getLocalUser().setPlaybackAudioFrameBeforeMixingParameters(numOfChannels, sampleRate);
+                SampleLogger.log("setPlaybackAudioFrameBeforeMixingParameters  ret=" + retR);
+                localUserObserver.setAudioFrameObserver(new SampleAudioFrameObserver() {
+                    @Override
+                    public int onPlaybackAudioFrameBeforeMixing(AgoraLocalUser agora_local_user, String channel_id,
+                            String uid,
+                            AudioFrame frame) {
+                        logExecutorService.execute(() -> {
+                            SampleLogger.log("onPlaybackAudioFrameBeforeMixing index:" + index);
+                        });
+                        return 1;
+                    }
+                });
+                SampleLogger.log("setAudioFrameObserver ret=" + retR);
+
+                VideoSubscriptionOptions subscriptionOptions = new VideoSubscriptionOptions();
+                subscriptionOptions.setEncodedFrameOnly(1);
+                subscriptionOptions.setType(Constants.VIDEO_STREAM_HIGH);
+
+                conn.getLocalUser().subscribeAllVideo(subscriptionOptions);
+
+                conn.getLocalUser()
+                        .registerVideoEncodedFrameObserver(
+                                new AgoraVideoEncodedFrameObserver(new SampleVideoEncodedFrameObserver("") {
+                                    @Override
+                                    public int onEncodedVideoFrame(
+                                            AgoraVideoEncodedFrameObserver observer, int uid,
+                                            ByteBuffer buffer, EncodedVideoFrameInfo info) {
+                                        logExecutorService.execute(() -> {
+                                            SampleLogger.log(
+                                                    "onEncodedVideoFrame uid:" + uid + " index:" + index);
+                                        });
+                                        return 1;
+                                    }
+                                }));
+
+            });
+        }
 
         try {
             userLeftLatch.await();
