@@ -65,6 +65,7 @@ public class Api2 {
 
         agoraPlayEngineer.initialize(appId);
 
+        final int baseUid = ThreadLocalRandom.current().nextInt(1, 100);
         for (int i = 0; i < MAX_USER; i++) {
             final int index = i;
             final String conToken = token;
@@ -72,7 +73,7 @@ public class Api2 {
                 while (true) {
                     RoomConfig roomConfig = new RoomConfig();
                     roomConfig.setRoomId(roomId + index);
-                    agoraPlayEngineer.joinRoom(conToken, "11" + index, roomConfig);
+                    agoraPlayEngineer.joinRoom(conToken, baseUid + "" + index, roomConfig);
 
                     try {
                         int randomMinutes = ThreadLocalRandom.current().nextInt(10, 21);
