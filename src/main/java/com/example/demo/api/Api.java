@@ -23,6 +23,7 @@ import com.example.demo.utils.Utils;
 import io.agora.rtc.AgoraLocalUser;
 import io.agora.rtc.AgoraRtcConn;
 import io.agora.rtc.AgoraService;
+import io.agora.rtc.Constants;
 import io.agora.rtc.AgoraServiceConfig;
 import io.agora.rtc.AgoraVideoEncodedFrameObserver;
 import io.agora.rtc.AudioFrame;
@@ -30,7 +31,8 @@ import io.agora.rtc.AudioSubscriptionOptions;
 import io.agora.rtc.EncodedVideoFrameInfo;
 import io.agora.rtc.RtcConnConfig;
 import io.agora.rtc.VideoSubscriptionOptions;
-import jakarta.annotation.Resource;
+// import jakarta.annotation.Resource;
+import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

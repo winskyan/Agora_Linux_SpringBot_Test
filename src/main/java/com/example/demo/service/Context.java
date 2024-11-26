@@ -7,7 +7,8 @@ import com.example.demo.config.Config;
 
 import io.agora.rtc.AgoraService;
 import io.agora.rtc.AgoraServiceConfig;
-import jakarta.annotation.Resource;
+// import jakarta.annotation.Resource;
+import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
