@@ -18,6 +18,7 @@ import com.example.demo.service.SampleLocalUserObserver;
 import com.example.demo.service.SampleLogger;
 import com.example.demo.service.SampleVideoEncodedFrameObserver;
 import com.example.demo.service.Token;
+import com.example.demo.utils.Utils;
 
 import io.agora.rtc.AgoraLocalUser;
 import io.agora.rtc.AgoraRtcConn;
@@ -47,7 +48,7 @@ public class Api {
 
     private CountDownLatch userLeftLatch = new CountDownLatch(1);
 
-    private int MAX_USER = 30;
+    private int MAX_USER = 8;
 
     private final ExecutorService testTaskExecutorService = Executors
             .newCachedThreadPool();
