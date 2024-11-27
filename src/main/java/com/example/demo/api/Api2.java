@@ -1,5 +1,6 @@
 package com.example.demo.api;
 
+import java.lang.reflect.Method;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -47,13 +48,7 @@ public class Api2 {
 
         testTaskExecutorService.execute(() -> {
             while (true) {
-                try {
-                    // 使用 Class.forName 方法加载类
-                    Class<?> clazz = Class.forName("java.util.ArrayList");
-                    // log.info("Class found: " + clazz.getName());
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
+                getCpuTime();
 
                 try {
                     Thread.sleep(2 * 1000);
@@ -95,5 +90,29 @@ public class Api2 {
 
         log.info("start end");
         return "new start";
+    }
+
+    private void getCpuTime() {
+        try {
+            // 获取 ThreadImpl 类的 Class 对象
+            Class<?> threadImplClass = Class.forName("sun.management.ThreadImpl");
+
+            // 获取 getThreadTotalCpuTime0 方法
+            Method getThreadTotalCpuTime0Method = threadImplClass.getDeclaredMethod("getThreadTotalCpuTime0",
+                    long.class);
+
+            // 设置方法为可访问
+            getThreadTotalCpuTime0Method.setAccessible(true);
+
+            // 获取当前线程的ID
+            long threadId = Thread.currentThread().getId();
+
+            // 调用 getThreadTotalCpuTime0 方法
+            long cpuTime = (long) getThreadTotalCpuTime0Method.invoke(null, threadId);
+
+            log.info("Current thread CPU time: " + cpuTime + " ns");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
