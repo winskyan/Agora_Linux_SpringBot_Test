@@ -28,7 +28,7 @@ public class Api2 {
 
     private CountDownLatch userLeftLatch = new CountDownLatch(1);
 
-    private int MAX_USER = 12;
+    private int MAX_USER = 50;
 
     private final ExecutorService testTaskExecutorService = Executors
             .newCachedThreadPool();

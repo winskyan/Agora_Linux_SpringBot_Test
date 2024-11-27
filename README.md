@@ -67,8 +67,10 @@ http://10.200.0.206:18080/api/start?roomId=aga
 
 ```
 sudo cp -f target/agora-demo.war /opt/tomcat/webapps/
+sudo cp -f target/agora-demo.war /opt/tomcat8/webapps/
 
 sudo /opt/tomcat/bin/catalina.sh run
+sudo /opt/tomcat8/bin/catalina.sh run
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/yanzhennan/Agora_Linux_SpringBot_Test/lib/native/linux/x86_64
 export JAVA_OPTS="$JAVA_OPTS -Djava.library.path=/home/yanzhennan/Agora_Linux_SpringBot_Test/lib/native/linux/x86_64"
