@@ -29,7 +29,7 @@ mvn archetype:generate -DgroupId=com.example -DartifactId=demo -DarchetypeArtifa
 2. 将本地 JAR 安装到 Maven 本地仓库：
 
    ```
-   mvn install:install-file -Dfile=lib/agora-sdk.jar -DgroupId=io.agora.rtc -DartifactId=linux-java-sdk -Dversion=4.0.1.3 -Dpackaging=jar
+   mvn install:install-file -Dfile=lib/agora-sdk.jar -DgroupId=io.agora.rtc -DartifactId=linux-java-sdk -Dversion=4.0.1.4 -Dpackaging=jar
    ```
 
 3. 构建项目：

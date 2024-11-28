@@ -29,6 +29,7 @@ public class AgoraPlayEngineer {
     }
 
     private final Map<String, AgoraRtcConn> RTC_CONN_MAP = new ConcurrentHashMap<>();
+    private final Map<String, AgoraVideoEncodedFrameObserver> RTC_OBSERVER_MAP = new ConcurrentHashMap<>();
 
     private static AgoraService agoraService;
 
@@ -94,9 +95,11 @@ public class AgoraPlayEngineer {
                     agoraRtcConn.getLocalUser().subscribeAllVideo(videoSubOptions);
 
                     AgoraVideoFrameObserver videoFrameObserver = new AgoraVideoFrameObserver(roomConfig, appId);
+                    AgoraVideoEncodedFrameObserver agoraVideoEncodedFrameObserver = new AgoraVideoEncodedFrameObserver(
+                            videoFrameObserver);
                     agoraRtcConn.getLocalUser()
-                            .registerVideoEncodedFrameObserver(new AgoraVideoEncodedFrameObserver(videoFrameObserver));
-
+                            .registerVideoEncodedFrameObserver(agoraVideoEncodedFrameObserver);
+                    RTC_OBSERVER_MAP.put(roomId, agoraVideoEncodedFrameObserver);
                     ret = agoraRtcConn.connect(token, roomId, userId);
                     if (ret != 0) {
                         throw new RuntimeException("connect agora room fail ret:" + ret + " roomId:" + roomId
@@ -117,6 +120,10 @@ public class AgoraPlayEngineer {
         agoraRtcConn.getLocalUser().unsubscribeAllAudio();
         agoraRtcConn.getLocalUser().unsubscribeAllVideo();
         agoraRtcConn.getLocalUser().unregisterAudioFrameObserver();
+        AgoraVideoEncodedFrameObserver observer = RTC_OBSERVER_MAP.get(roomId);
+        agoraRtcConn.getLocalUser().unregisterVideoEncodedFrameObserver(observer);
+        observer.destroy();
+        RTC_OBSERVER_MAP.remove(roomId);
         agoraRtcConn.unregisterObserver();
         agoraRtcConn.disconnect();
         agoraRtcConn.destroy();
