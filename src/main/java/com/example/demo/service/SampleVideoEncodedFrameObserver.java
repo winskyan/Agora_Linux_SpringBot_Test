@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -17,8 +16,8 @@ public class SampleVideoEncodedFrameObserver implements IVideoEncodedFrameObserv
     }
 
     @Override
-    public int onEncodedVideoFrame(AgoraVideoEncodedFrameObserver observer, int uid,
-            ByteBuffer buffer, EncodedVideoFrameInfo info) {
+    public int onEncodedVideoFrame(AgoraVideoEncodedFrameObserver agora_video_encoded_frame_observer, int uid,
+    byte[] image_buffer, long length, EncodedVideoFrameInfo video_encoded_frame_info) {
         return 1;
     }
 

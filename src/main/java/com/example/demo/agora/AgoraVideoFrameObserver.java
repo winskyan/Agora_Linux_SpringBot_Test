@@ -1,17 +1,16 @@
 package com.example.demo.agora;
 
-import io.agora.rtc.AgoraVideoEncodedFrameObserver;
-import io.agora.rtc.EncodedVideoFrameInfo;
-import io.agora.rtc.IVideoEncodedFrameObserver;
-import lombok.extern.slf4j.Slf4j;
-
-import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.example.demo.engineer.PlayEngineer;
 import com.example.demo.model.RoomConfig;
 import com.example.demo.model.RoomMember;
+
+import io.agora.rtc.AgoraVideoEncodedFrameObserver;
+import io.agora.rtc.EncodedVideoFrameInfo;
+import io.agora.rtc.IVideoEncodedFrameObserver;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class AgoraVideoFrameObserver implements IVideoEncodedFrameObserver {
@@ -28,18 +27,16 @@ public class AgoraVideoFrameObserver implements IVideoEncodedFrameObserver {
     }
 
     @Override
-    public int onEncodedVideoFrame(AgoraVideoEncodedFrameObserver agoraVideoEncodedFrameObserver, int user_id,
-            ByteBuffer byteBuffer, EncodedVideoFrameInfo encodedVideoFrameInfo) {
+    public int onEncodedVideoFrame(AgoraVideoEncodedFrameObserver agora_video_encoded_frame_observer, int uid,
+            byte[] image_buffer, long length, EncodedVideoFrameInfo video_encoded_frame_info) {
         long timestamp = System.currentTimeMillis();
-        boolean isKeyFrame = encodedVideoFrameInfo.getFrameType() == 3;
-        RoomMember roomMember = ROOM_MEMBER_MAP.computeIfAbsent(user_id, k -> {
-            log.info("agora user video room={},uid={}", roomConfig.getRoomId(), user_id);
+        boolean isKeyFrame = video_encoded_frame_info.getFrameType() == 3;
+        RoomMember roomMember = ROOM_MEMBER_MAP.computeIfAbsent(uid, k -> {
+            log.info("agora user video room={},uid={}", roomConfig.getRoomId(), uid);
             return new RoomMember();
         });
 
-        byte[] data = new byte[byteBuffer.remaining()];
-        byteBuffer.get(data);
-        PlayEngineer.handleVideo(data, roomMember, isKeyFrame, timestamp);
+        PlayEngineer.handleVideo(image_buffer, roomMember, isKeyFrame, timestamp);
 
         return 0;
     }

@@ -52,7 +52,7 @@
 		<dependency>
 			<groupId>io.agora.rtc</groupId>
 			<artifactId>linux-java-sdk</artifactId>
-			<version>4.0.1.4</version>
+			<version>4.0.1.13</version>
 		</dependency>
 
 		<dependency>

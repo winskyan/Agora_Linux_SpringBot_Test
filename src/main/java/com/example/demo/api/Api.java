@@ -1,9 +1,11 @@
 package com.example.demo.api;
 
-import java.nio.ByteBuffer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+// import jakarta.annotation.Resource;
+import javax.annotation.Resource;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,16 +25,14 @@ import com.example.demo.utils.Utils;
 import io.agora.rtc.AgoraLocalUser;
 import io.agora.rtc.AgoraRtcConn;
 import io.agora.rtc.AgoraService;
-import io.agora.rtc.Constants;
 import io.agora.rtc.AgoraServiceConfig;
 import io.agora.rtc.AgoraVideoEncodedFrameObserver;
 import io.agora.rtc.AudioFrame;
 import io.agora.rtc.AudioSubscriptionOptions;
+import io.agora.rtc.Constants;
 import io.agora.rtc.EncodedVideoFrameInfo;
 import io.agora.rtc.RtcConnConfig;
 import io.agora.rtc.VideoSubscriptionOptions;
-// import jakarta.annotation.Resource;
-import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -160,8 +160,9 @@ public class Api {
                                 new AgoraVideoEncodedFrameObserver(new SampleVideoEncodedFrameObserver("") {
                                     @Override
                                     public int onEncodedVideoFrame(
-                                            AgoraVideoEncodedFrameObserver observer, int uid,
-                                            ByteBuffer buffer, EncodedVideoFrameInfo info) {
+                                            AgoraVideoEncodedFrameObserver agora_video_encoded_frame_observer, int uid,
+                                            byte[] image_buffer, long length,
+                                            EncodedVideoFrameInfo video_encoded_frame_info) {
                                         logExecutorService.execute(() -> {
                                             SampleLogger.log(
                                                     "onEncodedVideoFrame uid:" + uid + " index:" + index);
