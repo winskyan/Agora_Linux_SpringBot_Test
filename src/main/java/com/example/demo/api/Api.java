@@ -15,9 +15,9 @@ import com.example.demo.service.ConnObserver;
 import com.example.demo.service.Container;
 import com.example.demo.service.SampleAudioFrameObserver;
 import com.example.demo.service.SampleLocalUserObserver;
-import com.example.demo.service.SampleLogger;
 import com.example.demo.service.SampleVideoEncodedFrameObserver;
 import com.example.demo.service.Token;
+import com.example.demo.utils.SampleLogger;
 import com.example.demo.utils.Utils;
 
 import io.agora.rtc.AgoraLocalUser;
@@ -30,6 +30,7 @@ import io.agora.rtc.AudioFrame;
 import io.agora.rtc.AudioSubscriptionOptions;
 import io.agora.rtc.EncodedVideoFrameInfo;
 import io.agora.rtc.RtcConnConfig;
+import io.agora.rtc.VadProcessResult;
 import io.agora.rtc.VideoSubscriptionOptions;
 // import jakarta.annotation.Resource;
 import javax.annotation.Resource;
@@ -140,7 +141,7 @@ public class Api {
                     @Override
                     public int onPlaybackAudioFrameBeforeMixing(AgoraLocalUser agora_local_user, String channel_id,
                             String uid,
-                            AudioFrame frame) {
+                            AudioFrame frame, VadProcessResult vadProcessResult) {
                         logExecutorService.execute(() -> {
                             SampleLogger.log("onPlaybackAudioFrameBeforeMixing index:" + index);
                         });

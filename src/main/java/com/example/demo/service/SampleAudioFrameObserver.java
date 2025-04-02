@@ -1,10 +1,12 @@
 package com.example.demo.service;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import io.agora.rtc.AgoraLocalUser;
 import io.agora.rtc.AudioFrame;
 import io.agora.rtc.IAudioFrameObserver;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import io.agora.rtc.VadProcessResult;
 
 public class SampleAudioFrameObserver implements IAudioFrameObserver {
     protected final ExecutorService writeFileExecutorService = Executors.newSingleThreadExecutor();
@@ -35,7 +37,7 @@ public class SampleAudioFrameObserver implements IAudioFrameObserver {
 
     @Override
     public int onPlaybackAudioFrameBeforeMixing(AgoraLocalUser agora_local_user, String channel_id, String uid,
-            AudioFrame frame) {
+            AudioFrame frame, VadProcessResult vadProcessResult) {
         return 0;
     }
 
@@ -43,5 +45,4 @@ public class SampleAudioFrameObserver implements IAudioFrameObserver {
     public int getObservedAudioFramePosition() {
         return 15;
     }
-
 }

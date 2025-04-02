@@ -7,8 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.stereotype.Component;
 
 import com.example.demo.model.RoomConfig;
-import com.example.demo.service.SampleLogger;
-
+import com.example.demo.utils.SampleLogger;
 import io.agora.rtc.AgoraRtcConn;
 import io.agora.rtc.AgoraService;
 import io.agora.rtc.AgoraServiceConfig;

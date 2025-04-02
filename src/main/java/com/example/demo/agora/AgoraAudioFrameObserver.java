@@ -1,15 +1,17 @@
 package com.example.demo.agora;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.example.demo.engineer.PlayEngineer;
 import com.example.demo.model.RoomConfig;
 import com.example.demo.model.RoomMember;
+
 import io.agora.rtc.AgoraLocalUser;
 import io.agora.rtc.AudioFrame;
 import io.agora.rtc.IAudioFrameObserver;
+import io.agora.rtc.VadProcessResult;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 public class AgoraAudioFrameObserver implements IAudioFrameObserver {
@@ -47,7 +49,7 @@ public class AgoraAudioFrameObserver implements IAudioFrameObserver {
 
     @Override
     public int onPlaybackAudioFrameBeforeMixing(AgoraLocalUser agoraLocalUser, String channel_id, String uid,
-            AudioFrame audioFrame) {
+            AudioFrame audioFrame, VadProcessResult vadProcessResult) {
         // 处理pcm数据
         long timestamp = System.currentTimeMillis();
         RoomMember roomMember = ROOM_MEMBER_MAP.computeIfAbsent(uid, k -> {
