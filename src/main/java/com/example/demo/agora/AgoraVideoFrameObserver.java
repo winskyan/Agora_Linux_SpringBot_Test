@@ -33,7 +33,7 @@ public class AgoraVideoFrameObserver implements IVideoEncodedFrameObserver {
         boolean isKeyFrame = video_encoded_frame_info.getFrameType() == 3;
         RoomMember roomMember = ROOM_MEMBER_MAP.computeIfAbsent(uid, k -> {
             log.info("agora user video room={},uid={}", roomConfig.getRoomId(), uid);
-            return new RoomMember();
+            return new RoomMember(roomConfig.getRoomId());
         });
 
         PlayEngineer.handleVideo(image_buffer, roomMember, isKeyFrame, timestamp);

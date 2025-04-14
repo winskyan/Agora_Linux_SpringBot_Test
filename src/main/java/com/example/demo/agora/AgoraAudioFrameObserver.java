@@ -52,7 +52,7 @@ public class AgoraAudioFrameObserver implements IAudioFrameObserver {
         long timestamp = System.currentTimeMillis();
         RoomMember roomMember = ROOM_MEMBER_MAP.computeIfAbsent(uid, k -> {
             log.info("agora user audio room={},uid={}", channel_id, uid);
-            return new RoomMember();
+            return new RoomMember(channel_id);
         });
         PlayEngineer.handleAudio(audioFrame.getBuffer(), roomMember, timestamp);
         return 0;
