@@ -40,7 +40,7 @@ mvn archetype:generate -DgroupId=com.example -DartifactId=demo -DarchetypeArtifa
 
 ## 运行应用
 
-### 本地jar运行
+### 本地 jar 运行
 
 使用以下命令运行应用：
 
@@ -54,17 +54,16 @@ LD_LIBRARY_PATH="$LD_LIBRARY_PATH:lib/native/linux/x86_64" java -Dserver.port=18
 - 配置应用在 18080 端口上运行
 - 运行 Spring Boot 应用 JAR 文件
 
-
 要启动一个房间，使用以下 API 端点：
 
 ```
-http://10.200.0.25:18080/api/start?roomId=agaStressTest
-http://10.200.0.25:18080/api2/start?roomId=agaStressTest
+http://10.200.0.85:18080/api2/start?roomId=agaStressTest
+http://10.200.0.85:18080/api3/start?roomId=tt1
 ```
 
 将 `aga` 替换为您想要的房间 ID。
 
-### tomcat运行
+### tomcat 运行
 
 ```
 sudo cp -f target/agora-demo.war /opt/tomcat/webapps/
@@ -78,8 +77,9 @@ export JAVA_OPTS="$JAVA_OPTS -Djava.library.path=/home/yanzhennan/Agora_Linux_Sp
 ```
 
 要启动一个房间，使用以下 API 端点：
+
 ```
-http://10.200.0.25:8080/agora-demo/api2/start?roomId=aga
+http://10.200.0.85:8080/agora-demo/api2/start?roomId=aga
 ```
 
 ## 停止运行

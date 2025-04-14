@@ -7,5 +7,6 @@ public class PlayEngineer {
     }
 
     public static void handleAudio(byte[] data, RoomMember roomMember, long timestamp) {
+        VoiceModulationEngine.handleAudio(data, roomMember.getRoomId(), timestamp);
     }
 }

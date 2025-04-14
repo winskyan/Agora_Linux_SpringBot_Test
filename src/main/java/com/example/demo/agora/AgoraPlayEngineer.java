@@ -7,8 +7,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.stereotype.Component;
 
 import com.example.demo.model.RoomConfig;
-import com.example.demo.service.SampleLogger;
 
+import io.agora.rtc.AgoraAudioPcmDataSender;
+import io.agora.rtc.AgoraLocalAudioTrack;
+import io.agora.rtc.AgoraMediaNodeFactory;
 import io.agora.rtc.AgoraRtcConn;
 import io.agora.rtc.AgoraService;
 import io.agora.rtc.AgoraServiceConfig;
@@ -32,8 +34,14 @@ public class AgoraPlayEngineer {
     private final Map<String, AgoraVideoEncodedFrameObserver> RTC_OBSERVER_MAP = new ConcurrentHashMap<>();
 
     private static AgoraService agoraService;
+    private static AgoraMediaNodeFactory mediaNodeFactory;
+
+    private static AgoraAudioPcmDataSender audioFrameSender;
+    private static AgoraLocalAudioTrack customAudioTrack;
 
     private static RtcConnConfig rtcConnConfig;
+
+    public static final Map<String, AudioConsumerUtils> AUDIO_CONSUMER_UTILS_MAP = new ConcurrentHashMap<>();
 
     private static final AtomicBoolean init = new AtomicBoolean(false);
 
@@ -50,9 +58,10 @@ public class AgoraPlayEngineer {
             agoraServiceConfig.setEnableVideo(1);
             agoraServiceConfig.setContext(0);
             agoraServiceConfig.setAppId(appId);
+            agoraServiceConfig.setAudioScenario(Constants.AUDIO_SCENARIO_CHORUS);
             int ret = agoraService.initialize(agoraServiceConfig);
             if (ret != 0) {
-                SampleLogger.log("agora initialize fail ret:" + ret);
+                log.info("agora initialize fail ret:" + ret);
             }
             rtcConnConfig = getRtcConnConfig();
             agoraService.setLogFile("agora_sdk.log", 10 * 1024);
@@ -100,15 +109,46 @@ public class AgoraPlayEngineer {
                     agoraRtcConn.getLocalUser()
                             .registerVideoEncodedFrameObserver(agoraVideoEncodedFrameObserver);
                     RTC_OBSERVER_MAP.put(roomId, agoraVideoEncodedFrameObserver);
+
                     ret = agoraRtcConn.connect(token, roomId, userId);
                     if (ret != 0) {
                         throw new RuntimeException("connect agora room fail ret:" + ret + " roomId:" + roomId
                                 + " userId:" + userId);
                     }
+
+                    // Create audio track
+                    mediaNodeFactory = agoraService.createMediaNodeFactory();
+                    audioFrameSender = mediaNodeFactory.createAudioPcmDataSender();
+                    customAudioTrack = agoraService.createCustomAudioTrackPcm(audioFrameSender);
+                    agoraRtcConn.getLocalUser().publishAudio(customAudioTrack);
+
+                    AudioConsumerUtils audioConsumerUtils = new AudioConsumerUtils(audioFrameSender, 1, 16000);
+                    AUDIO_CONSUMER_UTILS_MAP.put(roomId, audioConsumerUtils);
+
                     log.info("agora joinRoom roomId={},userId={}", roomId, userId);
 
                     return agoraRtcConn;
                 });
+    }
+
+    public void sendAudio(String roomId) {
+        log.info("agora sendAudio roomId={}", roomId);
+        AgoraRtcConn agoraRtcConn = RTC_CONN_MAP.get(roomId);
+        if (agoraRtcConn == null) {
+            return;
+        }
+        while (true) {
+            AudioConsumerUtils audioConsumerUtils = AUDIO_CONSUMER_UTILS_MAP.get(roomId);
+            if (audioConsumerUtils == null) {
+                return;
+            }
+            int sendCount = audioConsumerUtils.consume();
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void leaveRoom(String roomId) {
@@ -117,6 +157,27 @@ public class AgoraPlayEngineer {
             return;
         }
         log.info("agora leaveRoom roomId:{}", roomId);
+
+        AudioConsumerUtils audioConsumerUtils = AUDIO_CONSUMER_UTILS_MAP.remove(roomId);
+        if (audioConsumerUtils != null) {
+            audioConsumerUtils.release();
+        }
+
+        if (null != mediaNodeFactory) {
+            mediaNodeFactory.destroy();
+            mediaNodeFactory = null;
+        }
+        if (null != audioFrameSender) {
+            audioFrameSender.destroy();
+            audioFrameSender = null;
+        }
+
+        if (null != customAudioTrack) {
+            agoraRtcConn.getLocalUser().unpublishAudio(customAudioTrack);
+            customAudioTrack.destroy();
+            customAudioTrack = null;
+        }
+
         agoraRtcConn.getLocalUser().unsubscribeAllAudio();
         agoraRtcConn.getLocalUser().unsubscribeAllVideo();
         agoraRtcConn.getLocalUser().unregisterAudioFrameObserver();
@@ -147,7 +208,7 @@ public class AgoraPlayEngineer {
         audioSubOpt.setSampleRateHz(16000);
 
         RtcConnConfig rtcConnConfig = new RtcConnConfig();
-        rtcConnConfig.setClientRoleType(Constants.CLIENT_ROLE_AUDIENCE);
+        rtcConnConfig.setClientRoleType(Constants.CLIENT_ROLE_BROADCASTER);
         rtcConnConfig.setChannelProfile(Constants.CHANNEL_PROFILE_LIVE_BROADCASTING);
         rtcConnConfig.setAudioSubsOptions(audioSubOpt);
         rtcConnConfig.setAutoSubscribeAudio(0);
