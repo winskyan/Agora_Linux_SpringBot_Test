@@ -1,0 +1,43 @@
+{
+    "appId": "xxx",
+    "token": "xxx",
+    "channelName": "rtest",
+    "useStringUid": false,
+    "useCloudProxy": false,
+    "userId": "0",
+    "subAllAudio": true,
+    "subAudioUserList": [
+        "123"
+    ],
+    "subAllVideo": true,
+    "subVideoUserList": [
+        "123"
+    ],
+    "subStreamType": "high",
+    "isMix": true,
+    "layoutMode": "bestfit",
+    "maxResolutionUid": "123",
+    "recorderStreamType": "both",
+    "recorderPath": "recorder_mix_audio_video.mp4",
+    "audio": {
+        "sampleRate": 16000,
+        "numOfChannels": 1
+    },
+    "video": {
+        "width": 1920,
+        "height": 1080,
+        "fps": 15
+    },
+    "waterMark": [],
+    "encryption": {
+        "mode": "SM4_128_ECB",
+        "key": "123456",
+        "salt": ""
+    },
+    "rotation": [
+        {
+            "uid": "123",
+            "degree": 90
+        }
+    ]
+}

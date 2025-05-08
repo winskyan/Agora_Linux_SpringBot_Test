@@ -111,5 +111,5 @@ hs_err_pid*.log
 *.dmp
 .DS_Store
 .keys
-lib/
+libs/
 target/

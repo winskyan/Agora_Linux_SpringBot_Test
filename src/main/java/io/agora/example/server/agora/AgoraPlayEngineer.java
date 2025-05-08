@@ -20,11 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 public class AgoraPlayEngineer {
-
-    static {
-        SDK.load();
-    }
-
     private final Map<String, AgoraRtcConn> RTC_CONN_MAP = new ConcurrentHashMap<>();
     private final Map<String, AgoraVideoEncodedFrameObserver> RTC_OBSERVER_MAP = new ConcurrentHashMap<>();
 

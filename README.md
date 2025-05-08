@@ -46,6 +46,15 @@ mvn archetype:generate -DgroupId=io.agora -DartifactId=example -DarchetypeArtifa
 
 ## 运行应用
 
+### 配置 keys
+
+在项目根目录下创建 `.keys` 文件，并添加以下内容：
+
+```
+appId=XXX
+token=XXX
+```
+
 ### 本地 jar 运行
 
 使用以下命令运行应用：
@@ -63,8 +72,9 @@ LD_LIBRARY_PATH="$LD_LIBRARY_PATH:libs/native/linux/x86_64" java -Dserver.port=1
 要启动一个房间，使用以下 API 端点：
 
 ```
-http://10.200.0.25:18080/api/start?roomId=aga
-http://10.200.0.25:18080/api2/start?roomId=aga
+http://10.200.0.85:18080/api/server/start?roomId=aga
+
+http://10.200.0.85:18080/api/recording/start?configFileName=mix_stream_recorder_audio_video_water_marks.json
 ```
 
 将 `aga` 替换为您想要的房间 ID。
@@ -85,7 +95,9 @@ export JAVA_OPTS="$JAVA_OPTS -Djava.library.path=/home/yanzhennan/Agora_Linux_Sp
 要启动一个房间，使用以下 API 端点：
 
 ```
-http://10.200.0.25:8080/agora-example/api2/start?roomId=aga
+http://10.200.0.25:8080/agora-example/api/server/start?roomId=aga
+
+http://10.200.0.25:8080/agora-example/api/recording/start?configFileName=mix_stream_recorder_audio_video_water_marks.json
 ```
 
 ## 停止运行
@@ -98,7 +110,7 @@ http://10.200.0.25:8080/agora-example/api2/start?roomId=aga
 
 ## 注意事项
 
-- 确保 `lib/native/linux/x86_64` 目录包含所有必要的原生库。
+- 确保 `libs/native/linux/x86_64` 目录包含所有必要的原生库。
 - 应用默认在 18080 端口上运行。您可以通过修改 `-Dserver.port` 参数来更改端口。
 - 如果您的服务器 IP 不同，请确保更新 API 使用示例中的 IP 地址。
 

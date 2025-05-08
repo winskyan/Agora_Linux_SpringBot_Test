@@ -52,7 +52,13 @@
 		<dependency>
 			<groupId>io.agora.rtc</groupId>
 			<artifactId>linux-java-sdk</artifactId>
-			<version>4.4.31.101</version>
+			<version>4.4.31.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.agora.rtc</groupId>
+			<artifactId>linux-recording-java-sdk</artifactId>
+			<version>4.4.150.1</version>
 		</dependency>
 
 		<dependency>
@@ -66,6 +72,11 @@
 			<artifactId>lombok</artifactId>
 			<version>1.18.24</version>
 			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
 		</dependency>
 
 	</dependencies>
