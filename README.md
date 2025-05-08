@@ -7,7 +7,7 @@
 首先，使用以下 Maven 命令创建一个空的 Spring Boot 工程：
 
 ```
-mvn archetype:generate -DgroupId=com.example -DartifactId=demo -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false
+mvn archetype:generate -DgroupId=io.agora -DartifactId=example -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false
 ```
 
 这个命令会创建一个基本的 Maven 项目结构。之后，您需要修改 `pom.xml` 文件以添加 Spring Boot 依赖和插件。
@@ -29,13 +29,13 @@ mvn archetype:generate -DgroupId=com.example -DartifactId=demo -DarchetypeArtifa
 2. 将本地 JAR 安装到 Maven 本地仓库：
 
    ```
-   mvn install:install-file -Dfile=lib/agora-sdk.jar -DgroupId=io.agora.rtc -DartifactId=linux-java-sdk -Dversion=4.4.31.100 -Dpackaging=jar
+   mvn install:install-file -Dfile=libs/agora-sdk.jar -DgroupId=io.agora.rtc -DartifactId=linux-java-sdk -Dversion=4.4.31.100 -Dpackaging=jar
    ```
 
    如果要同时安装 javadoc，可以使用以下命令（需要先准备 javadoc jar 文件）：
 
    ```
-   mvn install:install-file -Dfile=lib/agora-sdk.jar -DgroupId=io.agora.rtc -DartifactId=linux-java-sdk -Dversion=4.4.31.101 -Dpackaging=jar -Djavadoc=lib/agora-sdk-javadoc.jar
+   mvn install:install-file -Dfile=libs/agora-sdk.jar -DgroupId=io.agora.rtc -DartifactId=linux-java-sdk -Dversion=4.4.31.101 -Dpackaging=jar -Djavadoc=libs/agora-sdk-javadoc.jar
    ```
 
 3. 构建项目：
@@ -51,7 +51,7 @@ mvn archetype:generate -DgroupId=com.example -DartifactId=demo -DarchetypeArtifa
 使用以下命令运行应用：
 
 ```
-LD_LIBRARY_PATH="$LD_LIBRARY_PATH:lib/native/linux/x86_64" java -Dserver.port=18080 -jar target/agora-demo.jar
+LD_LIBRARY_PATH="$LD_LIBRARY_PATH:libs/native/linux/x86_64" java -Dserver.port=18080 -jar target/agora-example.jar
 ```
 
 此命令执行以下操作：
@@ -72,20 +72,20 @@ http://10.200.0.25:18080/api2/start?roomId=aga
 ### tomcat 运行
 
 ```
-sudo cp -f target/agora-demo.war /opt/tomcat/webapps/
-sudo cp -f target/agora-demo.war /opt/tomcat8/webapps/
+sudo cp -f target/agora-example.war /opt/tomcat/webapps/
+sudo cp -f target/agora-example.war /opt/tomcat8/webapps/
 
 sudo /opt/tomcat/bin/catalina.sh run
 sudo /opt/tomcat8/bin/catalina.sh run
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/yanzhennan/Agora_Linux_SpringBot_Test/lib/native/linux/x86_64
-export JAVA_OPTS="$JAVA_OPTS -Djava.library.path=/home/yanzhennan/Agora_Linux_SpringBot_Test/lib/native/linux/x86_64"
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/yanzhennan/Agora_Linux_SpringBot_Test/libs/native/linux/x86_64
+export JAVA_OPTS="$JAVA_OPTS -Djava.library.path=/home/yanzhennan/Agora_Linux_SpringBot_Test/libs/native/linux/x86_64"
 ```
 
 要启动一个房间，使用以下 API 端点：
 
 ```
-http://10.200.0.25:8080/agora-demo/api2/start?roomId=aga
+http://10.200.0.25:8080/agora-example/api2/start?roomId=aga
 ```
 
 ## 停止运行
