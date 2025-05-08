@@ -7,14 +7,14 @@
 首先，使用以下 Maven 命令创建一个空的 Spring Boot 工程：
 
 ```
-mvn archetype:generate -DgroupId=com.example -DartifactId=demo -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false
+mvn archetype:generate -DgroupId=io.agora -DartifactId=example -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false
 ```
 
 这个命令会创建一个基本的 Maven 项目结构。之后，您需要修改 `pom.xml` 文件以添加 Spring Boot 依赖和插件。
 
 ## 前置要求
 
-- Java JDK（21 版本或更高）
+- Java JDK
 - Maven
 - Linux 环境
 
@@ -29,13 +29,15 @@ mvn archetype:generate -DgroupId=com.example -DartifactId=demo -DarchetypeArtifa
 2. 将本地 JAR 安装到 Maven 本地仓库：
 
    ```
-   mvn install:install-file -Dfile=lib/agora-sdk.jar -DgroupId=io.agora.rtc -DartifactId=linux-java-sdk -Dversion=4.4.31.100 -Dpackaging=jar
+   mvn install:install-file -Dfile=libs/agora-sdk.jar -DgroupId=io.agora.rtc -DartifactId=linux-java-sdk -Dversion=4.4.31.100 -Dpackaging=jar
+
+   mvn install:install-file -Dfile=libs/agora-recording-sdk.jar -DgroupId=io.agora.rtc -DartifactId=linux-recording-java-sdk -Dversion=4.4.150.100 -Dpackaging=jar
    ```
 
    如果要同时安装 javadoc，可以使用以下命令（需要先准备 javadoc jar 文件）：
 
    ```
-   mvn install:install-file -Dfile=lib/agora-sdk.jar -DgroupId=io.agora.rtc -DartifactId=linux-java-sdk -Dversion=4.4.31.101 -Dpackaging=jar -Djavadoc=lib/agora-sdk-javadoc.jar
+   mvn install:install-file -Dfile=libs/agora-sdk.jar -DgroupId=io.agora.rtc -DartifactId=linux-java-sdk -Dversion=4.4.31.101 -Dpackaging=jar -Djavadoc=libs/agora-sdk-javadoc.jar
    ```
 
 3. 构建项目：
@@ -46,12 +48,21 @@ mvn archetype:generate -DgroupId=com.example -DartifactId=demo -DarchetypeArtifa
 
 ## 运行应用
 
+### 配置 keys
+
+在项目根目录下创建 `.keys` 文件，并添加以下内容：
+
+```
+appId=XXX
+token=XXX
+```
+
 ### 本地 jar 运行
 
 使用以下命令运行应用：
 
 ```
-LD_LIBRARY_PATH="$LD_LIBRARY_PATH:lib/native/linux/x86_64" java -Dserver.port=18080 -jar target/agora-demo.jar
+LD_LIBRARY_PATH="$LD_LIBRARY_PATH:libs/native/linux/x86_64" java -Dserver.port=18080 -jar target/agora-example.jar
 ```
 
 此命令执行以下操作：
@@ -63,8 +74,11 @@ LD_LIBRARY_PATH="$LD_LIBRARY_PATH:lib/native/linux/x86_64" java -Dserver.port=18
 要启动一个房间，使用以下 API 端点：
 
 ```
-http://10.200.0.25:18080/api/start?roomId=aga
-http://10.200.0.25:18080/api2/start?roomId=aga
+http://10.200.0.85:18080/api/server/start?roomId=aga
+
+http://10.200.0.85:18080/api/recording/start?configFileName=mix_stream_recorder_audio_video_water_marks.json
+
+http://10.200.0.85:18080/api/recording/stop?taskId=20250508145257826-aa646c12eaea42e0946d2e6d52f88f51
 ```
 
 将 `aga` 替换为您想要的房间 ID。
@@ -72,20 +86,22 @@ http://10.200.0.25:18080/api2/start?roomId=aga
 ### tomcat 运行
 
 ```
-sudo cp -f target/agora-demo.war /opt/tomcat/webapps/
-sudo cp -f target/agora-demo.war /opt/tomcat8/webapps/
+sudo cp -f target/agora-example.war /opt/tomcat/webapps/
+sudo cp -f target/agora-example.war /opt/tomcat8/webapps/
 
 sudo /opt/tomcat/bin/catalina.sh run
 sudo /opt/tomcat8/bin/catalina.sh run
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/yanzhennan/Agora_Linux_SpringBot_Test/lib/native/linux/x86_64
-export JAVA_OPTS="$JAVA_OPTS -Djava.library.path=/home/yanzhennan/Agora_Linux_SpringBot_Test/lib/native/linux/x86_64"
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/yanzhennan/Agora_Linux_SpringBot_Test/libs/native/linux/x86_64
+export JAVA_OPTS="$JAVA_OPTS -Djava.library.path=/home/yanzhennan/Agora_Linux_SpringBot_Test/libs/native/linux/x86_64"
 ```
 
 要启动一个房间，使用以下 API 端点：
 
 ```
-http://10.200.0.25:8080/agora-demo/api2/start?roomId=aga
+http://10.200.0.25:8080/agora-example/api/server/start?roomId=aga
+
+http://10.200.0.25:8080/agora-example/api/recording/start?configFileName=mix_stream_recorder_audio_video_water_marks.json
 ```
 
 ## 停止运行
@@ -98,7 +114,7 @@ http://10.200.0.25:8080/agora-demo/api2/start?roomId=aga
 
 ## 注意事项
 
-- 确保 `lib/native/linux/x86_64` 目录包含所有必要的原生库。
+- 确保 `libs/native/linux/x86_64` 目录包含所有必要的原生库。
 - 应用默认在 18080 端口上运行。您可以通过修改 `-Dserver.port` 参数来更改端口。
 - 如果您的服务器 IP 不同，请确保更新 API 使用示例中的 IP 地址。
 
