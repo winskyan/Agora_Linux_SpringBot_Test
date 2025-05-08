@@ -30,6 +30,8 @@ mvn archetype:generate -DgroupId=io.agora -DartifactId=example -DarchetypeArtifa
 
    ```
    mvn install:install-file -Dfile=libs/agora-sdk.jar -DgroupId=io.agora.rtc -DartifactId=linux-java-sdk -Dversion=4.4.31.100 -Dpackaging=jar
+
+   mvn install:install-file -Dfile=libs/agora-recording-sdk.jar -DgroupId=io.agora.rtc -DartifactId=linux-recording-java-sdk -Dversion=4.4.150.100 -Dpackaging=jar
    ```
 
    如果要同时安装 javadoc，可以使用以下命令（需要先准备 javadoc jar 文件）：
@@ -75,6 +77,8 @@ LD_LIBRARY_PATH="$LD_LIBRARY_PATH:libs/native/linux/x86_64" java -Dserver.port=1
 http://10.200.0.85:18080/api/server/start?roomId=aga
 
 http://10.200.0.85:18080/api/recording/start?configFileName=mix_stream_recorder_audio_video_water_marks.json
+
+http://10.200.0.85:18080/api/recording/stop?taskId=20250508145257826-aa646c12eaea42e0946d2e6d52f88f51
 ```
 
 将 `aga` 替换为您想要的房间 ID。
